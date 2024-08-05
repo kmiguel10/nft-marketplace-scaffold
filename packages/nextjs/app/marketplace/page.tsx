@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
+import { NFTCard } from "~~/components/NFTCard";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 /* eslint-disable */
@@ -30,6 +31,7 @@ const GetIpfsUrlFromPinata = (pinataUrl: string): string => {
 
 const Marketplace: NextPage = () => {
   const [nfts, setNFTS] = useState<nftData[]>([]);
+  const { address: connectedAddress } = useAccount();
 
   const { data: listedNFTs } = useScaffoldReadContract({
     contractName: "NFTMarketplace",
@@ -37,6 +39,7 @@ const Marketplace: NextPage = () => {
     watch: true,
   });
 
+  /** Contract Hooks */
   const { data: nftMarketplace } = useScaffoldContract({ contractName: "NFTMarketplace" });
 
   useEffect(() => {
@@ -88,21 +91,17 @@ const Marketplace: NextPage = () => {
 
   return (
     <>
-      <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-        <h1 className="text-center">
-          <span className="block text-1xl mb-2">Listed NFTs</span>
-        </h1>
-        <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-          {nfts.map(nft => (
-            <div key={nft.tokenId}>
-              <img src={nft.image} alt={nft.name} />
-              <p>{nft.name}</p>
-              <p>{nft.description}</p>
-              <p>Price: {nft.price} ETH</p>
-            </div>
+      {nfts.length === 0 ? (
+        <div className="flex justify-center items-center mt-10">
+          <div className="text-2xl text-primary-content">No NFTs found</div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-4 my-8 px-5 justify-center">
+          {nfts.map(item => (
+            <NFTCard nft={item} key={item.tokenId} currentUser={connectedAddress} />
           ))}
         </div>
-      </div>
+      )}
     </>
   );
 };
