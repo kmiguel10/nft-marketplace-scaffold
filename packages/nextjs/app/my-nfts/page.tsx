@@ -6,7 +6,16 @@ import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTCard } from "~~/components/NFTCard";
+import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+/* eslint-disable */
+
+/* eslint-disable */
+
+/* eslint-disable */
+
+/* eslint-disable */
 
 /* eslint-disable */
 
@@ -101,17 +110,28 @@ const myNFTs: NextPage = () => {
 
   return (
     <>
-      {nfts.length === 0 ? (
-        <div className="flex justify-center items-center mt-10">
-          <div className="text-2xl text-primary-content">No NFTs found</div>
+      <div className="flex items-center flex-col flex-grow pt-10">
+        <div className="px-5">
+          <h1 className="text-center">
+            <span className="block text-4xl font-bold">My NFTs</span>
+          </h1>
+          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
+            <p className="my-2 font-medium">Connected Address:</p>
+            <Address address={connectedAddress} />
+          </div>
         </div>
-      ) : (
-        <div className="flex flex-wrap gap-4 my-8 px-5 justify-center">
-          {nfts.map(item => (
-            <NFTCard nft={item} currentUser={connectedAddress} key={item.tokenId} />
-          ))}
-        </div>
-      )}
+        {nfts.length === 0 ? (
+          <div className="flex justify-center items-center mt-10">
+            <div className="text-2xl text-primary-content">No NFTs found</div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-4 my-8 px-5 justify-center">
+            {nfts.map(item => (
+              <NFTCard nft={item} currentUser={connectedAddress} key={item.tokenId} />
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 };
