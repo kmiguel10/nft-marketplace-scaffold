@@ -6,8 +6,13 @@ import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTCard } from "~~/components/NFTCard";
+import { Spinner } from "~~/components/Spinner";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+/* eslint-disable */
+
+/* eslint-disable */
 
 /* eslint-disable */
 
@@ -49,6 +54,8 @@ const GetIpfsUrlFromPinata = (pinataUrl: string): string => {
 const myNFTs: NextPage = () => {
   const [nfts, setNFTS] = useState<nftData[]>([]);
   const { address: connectedAddress } = useAccount();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [marketplaceLoading, setMarketplaceLoading] = useState(false);
 
   const { data: listedNFTs } = useScaffoldReadContract({
     contractName: "NFTMarketplace",
@@ -62,6 +69,7 @@ const myNFTs: NextPage = () => {
   useEffect(() => {
     const getNFTMetadata = async () => {
       if (listedNFTs && nftMarketplace) {
+        setMarketplaceLoading(true);
         const items: (nftData | null)[] = await Promise.all(
           listedNFTs.map(async i => {
             console.log("Getting tokenId URI: ", i.tokenId);
@@ -92,6 +100,7 @@ const myNFTs: NextPage = () => {
                 description: meta.description,
               };
             } catch (error) {
+              setMarketplaceLoading(false);
               console.error(`Error fetching metadata for token ${i.tokenId}:`, error);
               return null;
             }
@@ -102,11 +111,22 @@ const myNFTs: NextPage = () => {
         );
         console.log("ITEMS", validItems);
         setNFTS(validItems);
+
+        const total = validItems.reduce((sum, item) => sum + parseFloat(item.price || "0"), 0);
+        setTotalPrice(total);
+        setMarketplaceLoading(false);
       }
     };
 
     getNFTMetadata();
   }, [listedNFTs]);
+
+  if (marketplaceLoading)
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <Spinner width="75" height="75" />
+      </div>
+    );
 
   return (
     <>
@@ -118,6 +138,10 @@ const myNFTs: NextPage = () => {
           <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
             <p className="my-2 font-medium">Connected Address:</p>
             <Address address={connectedAddress} />
+          </div>
+          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
+            <p className="my-2 font-medium">Total Price of Owned NFTs:</p>
+            <p className="text-2xl font-bold">{totalPrice} ETH</p>
           </div>
         </div>
         {nfts.length === 0 ? (

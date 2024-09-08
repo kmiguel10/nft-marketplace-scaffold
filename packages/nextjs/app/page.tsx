@@ -8,8 +8,6 @@ import { Address } from "~~/components/scaffold-eth";
 
 /* eslint-disable */
 
-/* eslint-disable */
-
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 

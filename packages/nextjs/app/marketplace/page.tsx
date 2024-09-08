@@ -6,7 +6,16 @@ import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTCard } from "~~/components/NFTCard";
+import { Spinner } from "~~/components/Spinner";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+/* eslint-disable */
+
+/* eslint-disable */
+
+/* eslint-disable */
+
+/* eslint-disable */
 
 /* eslint-disable */
 
@@ -32,6 +41,7 @@ const GetIpfsUrlFromPinata = (pinataUrl: string): string => {
 const Marketplace: NextPage = () => {
   const [nfts, setNFTS] = useState<nftData[]>([]);
   const { address: connectedAddress } = useAccount();
+  const [marketplaceLoading, setMarketplaceLoading] = useState(false);
 
   const { data: listedNFTs } = useScaffoldReadContract({
     contractName: "NFTMarketplace",
@@ -45,6 +55,7 @@ const Marketplace: NextPage = () => {
   useEffect(() => {
     const getNFTMetadata = async () => {
       if (listedNFTs && nftMarketplace) {
+        setMarketplaceLoading(true);
         const items: (nftData | null)[] = await Promise.all(
           listedNFTs.map(async i => {
             console.log("Getting tokenId URI: ", i.tokenId);
@@ -75,6 +86,7 @@ const Marketplace: NextPage = () => {
                 description: meta.description,
               };
             } catch (error) {
+              setMarketplaceLoading(false);
               console.error(`Error fetching metadata for token ${i.tokenId}:`, error);
               return null;
             }
@@ -83,11 +95,19 @@ const Marketplace: NextPage = () => {
         const validItems: nftData[] = items.filter((item): item is nftData => item !== null);
         console.log("ITEMS", validItems);
         setNFTS(validItems);
+        setMarketplaceLoading(false);
       }
     };
 
     getNFTMetadata();
   }, [listedNFTs]);
+
+  if (marketplaceLoading)
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <Spinner width="75" height="75" />
+      </div>
+    );
 
   return (
     <>

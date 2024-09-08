@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { useState } from "react";
+import Image from "next/image";
 import { Address } from "./scaffold-eth/Address";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -35,7 +36,7 @@ export const NFTCard = ({ nft, currentUser }: { nft: nftData; currentUser: strin
     <div className="card card-compact bg-base-100 shadow-lg sm:min-w-[300px] shadow-secondary">
       <figure className="relative">
         {/* eslint-disable-next-line  */}
-        <img src={nft.image} alt="NFT Image" className="h-60 min-w-full" />
+        <Image src={nft.image} alt="NFT Image" width={400} height={400} />
         <figcaption className="glass absolute bottom-4 left-4 p-4 w-25 rounded-xl">
           <span className="text-white "># {nft.tokenId}</span>
         </figcaption>
